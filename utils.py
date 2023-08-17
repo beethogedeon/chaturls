@@ -23,7 +23,7 @@ def set_api_key(openai_key: str, pinecone_key: Optional[str], pinecone_env: Opti
     try:
         os.environ['OPENAPI_KEY'] = openai_key
     except Exception as e:
-        print("Could not set the OpenAPI key in the environment variable because : " + str(e))
+        raise Exception("Could not set the OpenAPI key in the environment variable because : " + str(e))
 
     if pinecone_key is not None and pinecone_env is None:
         raise ValueError("PINECONE_API_ENV must be provided.")
@@ -70,7 +70,7 @@ def saving_in_vectorstore(data: List[Document], index_name: Optional[str], store
             embeddings = HuggingFaceEmbeddings()
 
         if store == "FAISS":
-            vectorstore = FAISS.from_documents(data, embeddings=embeddings)
+            vectorstore = FAISS.from_documents(data, embedding=embeddings)
 
             return vectorstore
         elif store == "PINECONE":
@@ -133,6 +133,7 @@ def retrieval(llm: pipeline, vectorstore: Union[FAISS, Pinecone]):
 
     try:
         chain = RetrievalQAWithSourcesChain.from_llm(llm=llm, retriever=vectorstore.as_retriever())
+        torch.save(chain, "chatbot_chain.pt")
         return chain
     except Exception as e:
         print("Error while creating the chain : " + str(e))
@@ -162,7 +163,7 @@ def train_model(source: List[str], store="FAISS"):
             data = extract_data_from_urls(source)
             data = split_data(data)
             if store == "FAISS":
-                vectorstore = saving_in_vectorstore(data)
+                vectorstore = saving_in_vectorstore(data, index_name=None, store=store)
             else:
                 vectorstore = saving_in_vectorstore(data, index_name="chatbot", store=store)
 
