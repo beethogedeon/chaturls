@@ -10,3 +10,4 @@ uvicorn
 sentence_transformers
 faiss-cpu
 faiss-gpu
+tiktoken
