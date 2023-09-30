@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-from helper import Model
+from helper import Model, load_model
 from typing import Optional, List
 from pydantic import BaseModel
-import torch
 import os
 
 app = FastAPI(
@@ -14,7 +13,7 @@ app = FastAPI(
 )
 
 if os.path.exists("../models/latest.pt"):
-    model = torch.load("../models/latest.pt")
+    model = load_model()
 
 
 class Api_key(BaseModel):
@@ -80,7 +79,3 @@ async def ask(query: str):
 
     except Exception as e:
         raise Exception("Could not ask the question because : " + str(e))
-
-import uvicorn
-
-uvicorn.run(app)
