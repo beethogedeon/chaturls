@@ -12,8 +12,14 @@ app = FastAPI(
     redoc_url=None
 )
 
+global model
+
 if os.path.exists("../models/latest.pt"):
-    model = load_model()
+    print("Loading model from file...")
+    try:
+        model = load_model()
+    except Exception as e:
+        print("Error while loading the model : " + str(e))
 
 
 class Api_key(BaseModel):
@@ -60,8 +66,8 @@ async def train(train_request: Train_request):
     """Train new Q/A chatbot with data from those urls"""
 
     try:
-        model = Model(urls=train_request.urls)
-        model.train(train_request.urls, train_request.store)
+        model_to_train = Model(urls=train_request.urls)
+        model_to_train.train(train_request.urls, train_request.store)
         return {"message": "Model trained successfully."}
 
     except Exception as e:
@@ -72,7 +78,11 @@ async def train(train_request: Train_request):
 async def ask(query: str):
     """Ask a question to the chatbot"""
 
+    global model
     try:
+
+        if model is None:
+            model = load_model()
 
         response = model.answer(query)
         return {"response": response}
