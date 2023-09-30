@@ -5,12 +5,16 @@ from pydantic import BaseModel
 import torch
 import os
 
-app = FastAPI()
+app = FastAPI(
+    title="Q/A Chatbot",
+    description="A Q/A chatbot trained with data from provided websites.",
+    version="0.1.0",
+    docs_url="/",
+    redoc_url=None
+)
 
 if os.path.exists("../models/latest.pt"):
     model = torch.load("../models/latest.pt")
-else:
-    model = Model(urls=[""])
 
 
 class Api_key(BaseModel):
@@ -19,8 +23,13 @@ class Api_key(BaseModel):
     pinecone_env: Optional[str]
 
 
-class api_response(BaseModel):
+class Api_response(BaseModel):
     response: str
+
+
+class Train_request(BaseModel):
+    urls: List[str]
+    store: Optional[str] = "FAISS"
 
 
 @app.post("/set-api-key")
@@ -48,13 +57,12 @@ async def set_api_key(api_key: Api_key):
 
 
 @app.post("/train")
-async def train(urls: List[str], store: Optional[str] = "FAISS"):
+async def train(train_request: Train_request):
     """Train new Q/A chatbot with data from those urls"""
 
     try:
-        model = Model(urls=urls)
-
-        model.train(urls, store)
+        model = Model(urls=train_request.urls)
+        model.train(train_request.urls, train_request.store)
         return {"message": "Model trained successfully."}
 
     except Exception as e:
@@ -66,6 +74,7 @@ async def ask(query: str):
     """Ask a question to the chatbot"""
 
     try:
+
         response = model.answer(query)
         return {"response": response}
 

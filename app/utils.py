@@ -12,6 +12,7 @@ from langchain.schema import Document
 from langchain.chains import RetrievalQA
 from langchain.embeddings import HuggingFaceEmbeddings
 import os
+from pydantic import BaseModel
 from typing import List, Union, Optional
 
 
@@ -149,10 +150,10 @@ class Model:
         """Saving the model."""
         try:
             # Check if there's a previous latest model, and rename it
-            if os.path.exists("models/latest.pt"):
-                os.rename("models/latest.pt", f"models/model_{self.creation_date}.pt")
+            if os.path.exists("../models/latest.pt"):
+                os.rename("../models/latest.pt", f"models/model_{self.creation_date}.pt")
                 
-            torch.save(self, f"models/latest.pt")
+            torch.save(self, f"../models/latest.pt")
         except Exception as e:
             print("Error while saving the model : " + str(e))
 

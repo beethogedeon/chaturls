@@ -2,7 +2,7 @@ langchain~=0.0.265
 pydantic~=1.10.9
 openai
 streamlit~=1.25.0
-torch~=2.0.1
+torch
 typing~=3.7.4.3
 pinecone-client
 fastapi
