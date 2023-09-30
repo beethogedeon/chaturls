@@ -38,7 +38,7 @@ def split_data(data: List[Document], chunk_size=1024, chunk_overlap=256) -> List
         print("Could not split the data into sentences because : " + str(e))
 
 
-def saving_in_vectorstore(data: List[Document], index_name: str | None = None, store="FAISS", embeddings_type="HF"):
+def saving_in_vectorstore(data: List[Document], index_name: str | None = None, store="FAISS", embeddings_type="OPENAI"):
     """Saving the data in the vectorstore."""
     try:
         if embeddings_type == "OPENAI":
