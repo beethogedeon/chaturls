@@ -7,3 +7,6 @@ typing~=3.7.4.3
 pinecone-client
 fastapi
 uvicorn
+sentence_transformers
+faiss-cpu
+faiss
