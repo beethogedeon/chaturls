@@ -80,3 +80,7 @@ async def ask(query: str):
 
     except Exception as e:
         raise Exception("Could not ask the question because : " + str(e))
+
+import uvicorn
+
+uvicorn.run(app)

@@ -1,5 +1,5 @@
 from datetime import datetime
-import torch
+from torch import load, save
 from langchain.document_loaders import WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
@@ -105,6 +105,29 @@ class Model:
         self.chain = None
         self.creation_date = None
 
+    def answer(self, query: str) -> str:
+        """Answering the question."""
+
+        try:
+            result = self.chain({"query": query}, return_only_outputs=True)
+            result = result["result"]
+
+            return result
+        except Exception as e:
+            print("Error while answering the question : " + str(e))
+
+    def save(self):
+        """Saving the model."""
+        try:
+            # Check if there's a previous latest model, and rename it
+            if os.path.exists("../models/latest.pt"):
+                temp_model = load("../models/latest.pt")
+                os.rename("../models/latest.pt", f"models/model_{temp_model.creation_date}.pt")
+
+            save(self, f"../models/latest.pt")
+        except Exception as e:
+            print("Error while saving the model : " + str(e))
+
     def train(self, urls: List[str] | None, store="FAISS"):
         """Train new Q/A chatbot with data from those urls"""
 
@@ -135,34 +158,11 @@ class Model:
             except Exception as e:
                 print("Error while training the model : " + str(e))
 
-    def answer(self, query: str) -> str:
-        """Answering the question."""
-
-        try:
-            result = self.chain({"query": query}, return_only_outputs=True)
-            result = result["result"]
-
-            return result
-        except Exception as e:
-            print("Error while answering the question : " + str(e))
-
-    def save(self):
-        """Saving the model."""
-        try:
-            # Check if there's a previous latest model, and rename it
-            if os.path.exists("../models/latest.pt"):
-                os.rename("../models/latest.pt", f"models/model_{self.creation_date}.pt")
-                
-            torch.save(self, f"../models/latest.pt")
-        except Exception as e:
-            print("Error while saving the model : " + str(e))
-
 
 def load_model(model_path="latest.pt"):
     try:
-        model = torch.load(f"models/{model_path}")
+        model = load(f"../models/{model_path}")
 
         return model
     except Exception as e:
         print("Error while loading the model :" + str(e))
-
