@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from utils import Model
+from helper import Model
 from typing import Optional, List
 from pydantic import BaseModel
 import torch
