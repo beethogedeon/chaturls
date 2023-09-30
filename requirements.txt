@@ -9,4 +9,4 @@ fastapi
 uvicorn
 sentence_transformers
 faiss-cpu
-faiss
+faiss-gpu
