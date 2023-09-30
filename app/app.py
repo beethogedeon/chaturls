@@ -12,14 +12,7 @@ app = FastAPI(
     redoc_url=None
 )
 
-global model
-
-if os.path.exists("../models/latest.pt"):
-    print("Loading model from file...")
-    try:
-        model = load_model()
-    except Exception as e:
-        print("Error while loading the model : " + str(e))
+model = Model(urls=None)
 
 
 class Api_key(BaseModel):
@@ -78,13 +71,12 @@ async def train(train_request: Train_request):
 async def ask(query: str):
     """Ask a question to the chatbot"""
 
-    global model
     try:
 
-        if model is None:
-            model = load_model()
+        model = load_model()
 
         response = model.answer(query)
+
         return {"response": response}
 
     except Exception as e:
